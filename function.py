@@ -9,7 +9,7 @@ from boto3.dynamodb.conditions import Key, Attr
 
 # Initialize DynamoDB client
 dynamodb = boto3.resource('dynamodb')
-table_name = "linePoongtao"
+table_name = "your_table_name"
 table = dynamodb.Table(table_name)
 
 # Set timezone for Thailand (UTC+7)
