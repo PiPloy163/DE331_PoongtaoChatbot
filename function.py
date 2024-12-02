@@ -122,38 +122,6 @@ def save_to_dynamodb(user_id, record_type, amount, note):
     except Exception as e:
         log_error("Error in save_to_dynamodb", e)
 
-def get_yesterday_balance(user_id):
-    """Retrieve and summarize income/expense data from DynamoDB for yesterday."""
-    try:
-        # Get yesterday's date
-        yesterday_date = datetime.now(thailand_tz) - timedelta(days=1)
-        yesterday_date_str = yesterday_date.strftime("%Y-%m-%d")
-
-        # Query the DynamoDB table for records by user_id and yesterday's date
-        response = table.query(
-            KeyConditionExpression=Key('user_id').eq(user_id),
-            FilterExpression=Attr('date').eq(yesterday_date_str)
-        )
-        
-        income_total = Decimal(0)
-        expense_total = Decimal(0)
-        
-        # Sum up the amounts for income and expenses
-        for item in response.get('Items', []):
-            if item['type'] == 'income':
-                income_total += Decimal(item['amount'])
-            elif item['type'] == 'expense':
-                expense_total += Decimal(item['amount'])
-        
-        # Calculate yesterday's net balance
-        net_balance_yesterday = income_total - expense_total
-        
-        return income_total, expense_total, net_balance_yesterday
-    
-    except Exception as e:
-        log_error("Error in get_yesterday_balance", e)
-        return Decimal(0), Decimal(0), Decimal(0)
-
 def get_summary_from_dynamodb(user_id):
     """Retrieve and summarize income/expense data from DynamoDB for a specific user."""
     try:
@@ -191,16 +159,13 @@ def get_summary_from_dynamodb(user_id):
         # Calculate today's net balance
         net_balance_today = income_total_today - expense_total_today
         
-        # Get yesterday's income, expense, and balance
-        income_total_yesterday, expense_total_yesterday, net_balance_yesterday = get_yesterday_balance(user_id)
         
         # Calculate the final balance (yesterday's balance + today's income - today's expenses)
-        final_balance = net_balance_yesterday + income_total_today - expense_total_today
+        final_balance = income_total_today - expense_total_today
         
         # Format the response message with the totals
         summary_message = (
             f"สรุปรายการของคุณในวันที่ {day} {month_in_thai} {year}\n"
-            f"เงินคงเหลือจากเมื่อวาน: {net_balance_yesterday} บาท\n"
             f"รายรับวันนี้: {income_total_today} บาท\n"
             f"รายจ่ายวันนี้: {expense_total_today} บาท\n"
             f"เงินคงเหลือปัจจุบัน: {final_balance} บาท"
@@ -218,7 +183,8 @@ def make_request(post_data):
         conn = http.client.HTTPSConnection("api.line.me")
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer <your token>'
+            'Authorization': 'Bearer <Channel access token>'
+            #Replace the Channel Access Token provided in the Messaging API section of LINE Developers
         }
         conn.request("POST", "/v2/bot/message/reply", post_data, headers)
         response = conn.getresponse()
