@@ -12,7 +12,7 @@ Chatbot for recording daily income and expenses
 6. Create a LINE Official Account.
 7. Go to LINE Business → Create a LINE Official Account.
 8. Navigate to your LINE Official Account.
-9. onfigure Response Settings: Enable Chat.
+9. Configure Response Settings: Enable Chat.
 10. Select Messaging API → Use the Messaging API.
 11. Select the provider you created.
 
@@ -30,7 +30,7 @@ Chatbot for recording daily income and expenses
 6. Go to the API Gateway Console.
 7. Create a stage and deploy the API.
 8. Navigate to DynamoDB.
-9. reate a table:
+9. Create a table:
 * Partition key: user_id (type: String)
 * Sort key: transaction_id (type: String)
 10. Click Create table.
@@ -58,8 +58,3 @@ Test by typing:
 
 Expected Response:
 - บันทึก (รายรับ/รายจ่าย) <จำนวนเงิน> (จาก/ให้กับ): ... เรียบร้อยแล้ว!"
-
-
-
-#### Final Project DE331 Intro to cloud subject 3rd year 1st semester
-Pornpimon.srt and Jiraphat.tkh
